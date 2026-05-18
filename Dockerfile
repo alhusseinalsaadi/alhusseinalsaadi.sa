@@ -33,7 +33,8 @@ COPY --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlit
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/prisma ./prisma
 
-EXPOSE 3000
+EXPOSE 8080
 
 # Apply migrations via plain Node.js script, then start the server
+# PORT is set by Railway at runtime — do not hardcode it
 CMD ["sh", "-c", "node scripts/startup.js && node server.js"]
