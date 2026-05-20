@@ -11,6 +11,7 @@ const dbPath = path.isAbsolute(stripped)
   : path.resolve(process.cwd(), stripped);
 
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+console.log("[startup] DATABASE_URL:", process.env.DATABASE_URL ?? "(default)");
 
 console.log("[startup] Opening database:", dbPath);
 const db = new Database(dbPath);
