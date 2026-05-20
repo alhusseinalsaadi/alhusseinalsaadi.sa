@@ -5,75 +5,23 @@ import Footer from "@/components/layout/Footer";
 import AIChatWidget from "@/components/ai/AIChatWidget";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import CookieConsent from "@/components/ui/CookieConsent";
-import { Calendar, Clock, ArrowLeft } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, BookOpen } from "lucide-react";
+import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "المدونة القانونية",
   description: "مقالات وتحليلات قانونية متخصصة في القانون السعودي من مكتب الحسين بن أحمد بن حسين السعدي للمحاماة.",
 };
 
-// Static posts for SSG — in production these come from DB
-const posts = [
-  {
-    slug: "nazam-almuamalat-almdaniya",
-    title: "نظام المعاملات المدنية 1444هـ — ما الذي تغيّر في عقودك؟",
-    excerpt: "صدر نظام المعاملات المدنية السعودي عام 1444هـ ليكون منظوماً قانونياً شاملاً ينظم العلاقات المدنية. تعرف على أبرز التغييرات التي تؤثر على عقودك التجارية.",
-    date: "12 مايو 2026",
-    category: "قانون الأعمال",
-    readTime: "5 دقائق",
-  },
-  {
-    slug: "vision-2030-business",
-    title: "رؤية 2030 وفرص الاستثمار — الإطار القانوني للمستثمرين",
-    excerpt: "كيف تستفيد من فرص رؤية 2030؟ دليل قانوني شامل للإجراءات والتراخيص والفرص الاستثمارية المتاحة للمواطنين والمقيمين والمستثمرين الأجانب.",
-    date: "5 مايو 2026",
-    category: "الاستثمار",
-    readTime: "7 دقائق",
-  },
-  {
-    slug: "ejarat-wafi-guide",
-    title: "منصة إيجار ووافي — دليلك القانوني لعقود الإيجار السعودية",
-    excerpt: "كل ما تحتاج معرفته عن منصتي إيجار ووافي وكيف تحمي حقوقك كمالك أو مستأجر في ظل الأنظمة العقارية السعودية المحدّثة.",
-    date: "28 أبريل 2026",
-    category: "العقارات",
-    readTime: "6 دقائق",
-  },
-  {
-    slug: "labor-law-updates-2025",
-    title: "أبرز تعديلات نظام العمل السعودي — ما يجب أن يعرفه كل صاحب عمل",
-    excerpt: "تعديلات جوهرية طالت نظام العمل السعودي تؤثر على عقود التوظيف وإجازات الأمومة والآجال الزمنية لتسوية النزاعات. إليك الملخص الشامل.",
-    date: "20 أبريل 2026",
-    category: "قانون العمل",
-    readTime: "8 دقائق",
-  },
-  {
-    slug: "zatca-vat-compliance",
-    title: "الامتثال لضريبة القيمة المضافة — دليل عملي لتجنب الغرامات",
-    excerpt: "مع تصاعد نشاط هيئة الزكاة والضريبة والجمارك في التدقيق، كيف تضمن امتثال شركتك الكامل لمتطلبات ضريبة القيمة المضافة؟",
-    date: "10 أبريل 2026",
-    category: "الضرائب",
-    readTime: "6 دقائق",
-  },
-  {
-    slug: "arbitration-saudi-guide",
-    title: "التحكيم في السعودية — متى تلجأ إليه وكيف تستفيد منه؟",
-    excerpt: "دليل شامل لنظام التحكيم السعودي، مزاياه مقارنة بالتقاضي، وكيف تصيغ بند التحكيم في عقودك لضمان أسرع حل لنزاعاتك.",
-    date: "1 أبريل 2026",
-    category: "حل النزاعات",
-    readTime: "7 دقائق",
-  },
-];
+export const revalidate = 60;
 
-const categoryColors: Record<string, string> = {
-  "قانون الأعمال": "#1A2744",
-  "الاستثمار": "#C9A84C",
-  "العقارات": "#2A5F4A",
-  "قانون العمل": "#7C3AED",
-  "الضرائب": "#DC2626",
-  "حل النزاعات": "#D97706",
-};
+export default async function BlogPage() {
+  const posts = await prisma.post.findMany({
+    where: { category: "blog", published: true },
+    orderBy: { publishedAt: "desc" },
+    select: { id: true, title: true, slug: true, excerpt: true, publishedAt: true, createdAt: true },
+  });
 
-export default function BlogPage() {
   return (
     <>
       <Header />
@@ -96,43 +44,42 @@ export default function BlogPage() {
         {/* Posts Grid */}
         <section style={{ background: "#FAFAF8", padding: "80px 24px" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "24px" }}>
-              {posts.map((post) => (
-                <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
-                  <article
-                    className="card"
-                    style={{ height: "100%", display: "flex", flexDirection: "column", gap: "14px", cursor: "pointer" }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <span style={{
-                        background: categoryColors[post.category] || "#1A2744",
-                        color: "white", fontSize: "12px", fontWeight: 600,
-                        padding: "4px 12px", borderRadius: "999px",
-                      }}>
-                        {post.category}
-                      </span>
-                      <span style={{ fontSize: "12px", color: "#6B6B6B", display: "flex", alignItems: "center", gap: "4px" }}>
-                        <Clock size={12} /> {post.readTime}
-                      </span>
-                    </div>
-                    <h2 style={{ fontFamily: "'Noto Kufi Arabic', serif", fontSize: "19px", fontWeight: 700, color: "#1A2744", lineHeight: "1.5" }}>
-                      {post.title}
-                    </h2>
-                    <p style={{ fontSize: "14px", color: "#6B6B6B", lineHeight: "1.7", flex: 1 }}>
-                      {post.excerpt}
-                    </p>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "12px", borderTop: "1px solid #E5E5E0" }}>
-                      <span style={{ fontSize: "13px", color: "#6B6B6B", display: "flex", alignItems: "center", gap: "6px" }}>
-                        <Calendar size={13} /> {post.date}
-                      </span>
-                      <span style={{ color: "#C9A84C", fontSize: "13px", fontWeight: 600, display: "flex", alignItems: "center", gap: "4px" }}>
-                        اقرأ المزيد <ArrowLeft size={13} style={{ transform: "scaleX(-1)" }} />
-                      </span>
-                    </div>
-                  </article>
-                </Link>
-              ))}
-            </div>
+            {posts.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "80px 0", color: "#6B6B6B" }}>
+                <BookOpen size={48} style={{ margin: "0 auto 16px", opacity: 0.3 }} />
+                <p style={{ fontSize: "18px", fontWeight: 600 }}>لا توجد مقالات منشورة بعد</p>
+                <p style={{ fontSize: "14px", marginTop: "8px", opacity: 0.7 }}>تابعنا قريباً لأحدث المقالات القانونية</p>
+              </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "24px" }}>
+                {posts.map((post) => {
+                  const date = post.publishedAt ?? post.createdAt;
+                  return (
+                    <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
+                      <article className="card" style={{ height: "100%", display: "flex", flexDirection: "column", gap: "14px", cursor: "pointer" }}>
+                        <h2 style={{ fontFamily: "'Noto Kufi Arabic', serif", fontSize: "19px", fontWeight: 700, color: "#1A2744", lineHeight: "1.5", flex: 1 }}>
+                          {post.title}
+                        </h2>
+                        {post.excerpt && (
+                          <p style={{ fontSize: "14px", color: "#6B6B6B", lineHeight: "1.7" }}>
+                            {post.excerpt.slice(0, 180)}{post.excerpt.length > 180 ? "..." : ""}
+                          </p>
+                        )}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "12px", borderTop: "1px solid #E5E5E0" }}>
+                          <span style={{ fontSize: "13px", color: "#6B6B6B", display: "flex", alignItems: "center", gap: "6px" }}>
+                            <Calendar size={13} />
+                            {new Date(date).toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric" })}
+                          </span>
+                          <span style={{ color: "#C9A84C", fontSize: "13px", fontWeight: 600, display: "flex", alignItems: "center", gap: "4px" }}>
+                            اقرأ المزيد <ArrowLeft size={13} style={{ transform: "scaleX(-1)" }} />
+                          </span>
+                        </div>
+                      </article>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </section>
       </main>

@@ -5,21 +5,23 @@ import Footer from "@/components/layout/Footer";
 import AIChatWidget from "@/components/ai/AIChatWidget";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import CookieConsent from "@/components/ui/CookieConsent";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { Calendar, ArrowLeft, Newspaper } from "lucide-react";
+import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "الأخبار القانونية",
   description: "آخر الأخبار والتحديثات القانونية في المملكة العربية السعودية.",
 };
 
-const newsItems = [
-  { slug: "misa-updates-2026", title: "هيئة الاستثمار تُطلق حزمة تحفيزية جديدة للمستثمرين الأجانب", date: "14 مايو 2026", category: "تحديثات تنظيمية" },
-  { slug: "zatca-new-rules", title: "ZATCA تُصدر لوائح جديدة للفوترة الإلكترونية المرحلة الثالثة", date: "10 مايو 2026", category: "الضرائب" },
-  { slug: "commercial-court-2026", title: "المحكمة التجارية تُقر إجراءات مُسرَّعة للنزاعات التجارية الصغيرة", date: "5 مايو 2026", category: "القضاء" },
-  { slug: "labor-reform-2026", title: "تعديلات نظام العمل الجديدة وأثرها على عقود التوظيف", date: "28 أبريل 2026", category: "قانون العمل" },
-];
+export const revalidate = 60;
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const newsItems = await prisma.post.findMany({
+    where: { category: "news", published: true },
+    orderBy: { publishedAt: "desc" },
+    select: { id: true, title: true, slug: true, excerpt: true, publishedAt: true, createdAt: true },
+  });
+
   return (
     <>
       <Header />
@@ -34,26 +36,43 @@ export default function NewsPage() {
             </p>
           </div>
         </section>
+
         <section style={{ background: "#FAFAF8", padding: "64px 24px" }}>
-          <div style={{ maxWidth: "900px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "16px" }}>
-            {newsItems.map((item) => (
-              <Link key={item.slug} href={`/news/${item.slug}`} style={{ textDecoration: "none" }}>
-                <div className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px", cursor: "pointer" }}>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ background: "#1A2744", color: "white", fontSize: "11px", fontWeight: 600, padding: "3px 10px", borderRadius: "999px", display: "inline-block", marginBottom: "10px" }}>
-                      {item.category}
-                    </span>
-                    <h2 style={{ fontFamily: "'Noto Kufi Arabic', serif", fontSize: "18px", fontWeight: 700, color: "#1A2744", marginBottom: "8px" }}>
-                      {item.title}
-                    </h2>
-                    <span style={{ fontSize: "13px", color: "#6B6B6B", display: "flex", alignItems: "center", gap: "6px" }}>
-                      <Calendar size={13} /> {item.date}
-                    </span>
-                  </div>
-                  <ArrowLeft size={18} color="#C9A84C" style={{ transform: "scaleX(-1)", flexShrink: 0 }} />
-                </div>
-              </Link>
-            ))}
+          <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+            {newsItems.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "80px 0", color: "#6B6B6B" }}>
+                <Newspaper size={48} style={{ margin: "0 auto 16px", opacity: 0.3 }} />
+                <p style={{ fontSize: "18px", fontWeight: 600 }}>لا توجد أخبار منشورة بعد</p>
+                <p style={{ fontSize: "14px", marginTop: "8px", opacity: 0.7 }}>تابعنا قريباً لأحدث الأخبار القانونية</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {newsItems.map((item) => {
+                  const date = item.publishedAt ?? item.createdAt;
+                  return (
+                    <Link key={item.slug} href={`/blog/${item.slug}`} style={{ textDecoration: "none" }}>
+                      <div className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px", cursor: "pointer" }}>
+                        <div style={{ flex: 1 }}>
+                          <h2 style={{ fontFamily: "'Noto Kufi Arabic', serif", fontSize: "18px", fontWeight: 700, color: "#1A2744", marginBottom: "8px" }}>
+                            {item.title}
+                          </h2>
+                          {item.excerpt && (
+                            <p style={{ fontSize: "14px", color: "#6B6B6B", marginBottom: "8px" }}>
+                              {item.excerpt.slice(0, 120)}{item.excerpt.length > 120 ? "..." : ""}
+                            </p>
+                          )}
+                          <span style={{ fontSize: "13px", color: "#6B6B6B", display: "flex", alignItems: "center", gap: "6px" }}>
+                            <Calendar size={13} />
+                            {new Date(date).toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric" })}
+                          </span>
+                        </div>
+                        <ArrowLeft size={18} color="#C9A84C" style={{ transform: "scaleX(-1)", flexShrink: 0 }} />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </section>
       </main>

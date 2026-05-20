@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
+import { SETTING_DEFAULTS } from "@/lib/site-settings";
 
 async function isAdmin() {
   const c = await cookies();
@@ -12,10 +13,10 @@ const ALLOWED_KEYS = [
   "address", "whatsapp", "twitter", "linkedin",
 ];
 
+// Public GET — contact info is not sensitive
 export async function GET() {
-  if (!(await isAdmin())) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   const rows = await prisma.siteSetting.findMany();
-  const settings: Record<string, string> = {};
+  const settings: Record<string, string> = { ...SETTING_DEFAULTS };
   rows.forEach((r) => { settings[r.key] = r.value; });
   return NextResponse.json(settings);
 }
