@@ -1,43 +1,17 @@
 import Link from "next/link";
 import { ArrowLeft, Calendar } from "lucide-react";
+import { prisma } from "@/lib/db";
 
-const posts = [
-  {
-    slug: "nazam-almuamalat-almdaniya",
-    title: "نظام المعاملات المدنية 1444هـ — ما الذي تغيّر في عقودك؟",
-    excerpt:
-      "صدر نظام المعاملات المدنية السعودي عام 1444هـ ليكون منظوماً قانونياً شاملاً ينظم العلاقات المدنية. تعرف على أبرز التغييرات التي تؤثر على عقودك التجارية.",
-    date: "12 مايو 2026",
-    category: "قانون الأعمال",
-    readTime: "5 دقائق",
-  },
-  {
-    slug: "vision-2030-business",
-    title: "رؤية 2030 وفرص الاستثمار — الإطار القانوني للمستثمرين",
-    excerpt:
-      "كيف تستفيد من فرص رؤية 2030؟ دليل قانوني شامل للإجراءات والتراخيص والفرص الاستثمارية المتاحة للمواطنين والمقيمين والمستثمرين الأجانب.",
-    date: "5 مايو 2026",
-    category: "الاستثمار",
-    readTime: "7 دقائق",
-  },
-  {
-    slug: "ejarat-wafi-guide",
-    title: "منصة إيجار ووافي — دليلك القانوني لعقود الإيجار السعودية",
-    excerpt:
-      "كل ما تحتاج معرفته عن منصتي إيجار ووافي وكيف تحمي حقوقك كمالك أو مستأجر في ظل الأنظمة العقارية السعودية المحدّثة.",
-    date: "28 أبريل 2026",
-    category: "العقارات",
-    readTime: "6 دقائق",
-  },
-];
+export default async function BlogPreviewSection() {
+  const posts = await prisma.post.findMany({
+    where: { category: "blog", published: true },
+    orderBy: { publishedAt: "desc" },
+    take: 3,
+    select: { slug: true, title: true, excerpt: true, publishedAt: true, createdAt: true, tags: true },
+  });
 
-const categoryColors: Record<string, string> = {
-  "قانون الأعمال": "#1A2744",
-  "الاستثمار": "#C9A84C",
-  "العقارات": "#2A5F4A",
-};
+  if (posts.length === 0) return null;
 
-export default function BlogPreviewSection() {
   return (
     <section style={{ background: "#FAFAF8", padding: "96px 24px" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
@@ -92,82 +66,87 @@ export default function BlogPreviewSection() {
             gap: "24px",
           }}
         >
-          {posts.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              style={{ textDecoration: "none" }}
-            >
-              <article
-                className="card"
-                style={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                  cursor: "pointer",
-                }}
+          {posts.map((post) => {
+            const date = post.publishedAt ?? post.createdAt;
+            const tag = post.tags?.split(",")[0]?.trim() || "قانوني";
+            return (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                style={{ textDecoration: "none" }}
               >
-                {/* Category */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span
+                <article
+                  className="card"
+                  style={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
+                    cursor: "pointer",
+                  }}
+                >
+                  {/* Tag */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span
+                      style={{
+                        background: "#1A2744",
+                        color: "white",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        padding: "4px 12px",
+                        borderRadius: "999px",
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3
                     style={{
-                      background: categoryColors[post.category] || "#1A2744",
-                      color: "white",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      padding: "4px 12px",
-                      borderRadius: "999px",
+                      fontFamily: "'Noto Kufi Arabic', serif",
+                      fontSize: "18px",
+                      fontWeight: 700,
+                      color: "#1A2744",
+                      lineHeight: "1.5",
                     }}
                   >
-                    {post.category}
-                  </span>
-                  <span style={{ fontSize: "12px", color: "#6B6B6B" }}>{post.readTime} قراءة</span>
-                </div>
+                    {post.title}
+                  </h3>
 
-                {/* Title */}
-                <h3
-                  style={{
-                    fontFamily: "'Noto Kufi Arabic', serif",
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    color: "#1A2744",
-                    lineHeight: "1.5",
-                  }}
-                >
-                  {post.title}
-                </h3>
+                  {/* Excerpt */}
+                  {post.excerpt && (
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        color: "#6B6B6B",
+                        lineHeight: "1.7",
+                        flex: 1,
+                      }}
+                    >
+                      {post.excerpt.slice(0, 120)}{post.excerpt.length > 120 ? "..." : ""}
+                    </p>
+                  )}
 
-                {/* Excerpt */}
-                <p
-                  style={{
-                    fontSize: "14px",
-                    color: "#6B6B6B",
-                    lineHeight: "1.7",
-                    flex: 1,
-                  }}
-                >
-                  {post.excerpt}
-                </p>
-
-                {/* Date */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    color: "#6B6B6B",
-                    fontSize: "13px",
-                    paddingTop: "12px",
-                    borderTop: "1px solid #E5E5E0",
-                  }}
-                >
-                  <Calendar size={14} />
-                  {post.date}
-                </div>
-              </article>
-            </Link>
-          ))}
+                  {/* Date */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      color: "#6B6B6B",
+                      fontSize: "13px",
+                      paddingTop: "12px",
+                      borderTop: "1px solid #E5E5E0",
+                    }}
+                  >
+                    <Calendar size={14} />
+                    {new Date(date).toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric" })}
+                  </div>
+                </article>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

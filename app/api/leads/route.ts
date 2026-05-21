@@ -46,6 +46,18 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ success: true, id: lead.id }, { status: 201 });
 }
 
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "معرّف مطلوب" }, { status: 400 });
+  try {
+    await prisma.lead.delete({ where: { id } });
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "لم يُعثر على السجل" }, { status: 404 });
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   let body: unknown;
   try { body = await req.json(); }

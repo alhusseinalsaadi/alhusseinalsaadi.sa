@@ -114,11 +114,12 @@ export default async function LeadsPage() {
                     </div>
                   )}
 
-                  {/* Status buttons */}
-                  <div style={{ display: "flex", gap: "8px" }}>
+                  {/* Status buttons + delete */}
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
                     {["new", "contacted", "closed"].map((s) => (
                       <LeadStatusButton key={s} leadId={lead.id} status={s} current={lead.status} label={statusColors[s].label} />
                     ))}
+                    <LeadDeleteButton leadId={lead.id} />
                   </div>
                 </div>
               );
@@ -127,6 +128,29 @@ export default async function LeadsPage() {
         )}
       </div>
     </AdminShell>
+  );
+}
+
+function LeadDeleteButton({ leadId }: { leadId: string }) {
+  return (
+    <form action={async () => {
+      "use server";
+      const { prisma } = await import("@/lib/db");
+      await prisma.lead.delete({ where: { id: leadId } });
+      const { revalidatePath } = await import("next/cache");
+      revalidatePath("/admin/leads");
+    }}>
+      <button
+        type="submit"
+        style={{
+          background: "#FEF2F2", color: "#DC2626", border: "1px solid #FCA5A5",
+          padding: "6px 14px", borderRadius: "8px", fontSize: "12px", fontWeight: 600,
+          cursor: "pointer", fontFamily: "'IBM Plex Arabic', sans-serif", marginRight: "auto",
+        }}
+      >
+        حذف
+      </button>
+    </form>
   );
 }
 
