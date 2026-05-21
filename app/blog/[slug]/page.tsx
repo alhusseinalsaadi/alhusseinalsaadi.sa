@@ -9,7 +9,7 @@ import CookieConsent from "@/components/ui/CookieConsent";
 import { Calendar, ArrowRight, MessageCircle } from "lucide-react";
 import { prisma } from "@/lib/db";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

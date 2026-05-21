@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "مقالات وتحليلات قانونية متخصصة في القانون السعودي من مكتب الحسين بن أحمد بن حسين السعدي للمحاماة.",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
   const posts = await prisma.post.findMany({

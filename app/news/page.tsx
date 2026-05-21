@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "آخر الأخبار والتحديثات القانونية في المملكة العربية السعودية.",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function NewsPage() {
   const newsItems = await prisma.post.findMany({
