@@ -196,7 +196,7 @@ export default function HeroSection() {
                 src="/h_logo.png"
                 alt="مكتب الحسين بن أحمد بن حسين السعدي للمحاماة"
                 style={{
-                  height: "110px",
+                  height: "80px",
                   width: "auto",
                   objectFit: "contain",
                   display: "block",
