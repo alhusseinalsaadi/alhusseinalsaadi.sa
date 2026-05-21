@@ -43,6 +43,23 @@ export default function HeroSection() {
         }}
       />
 
+      {/* Logo watermark */}
+      <div
+        style={{
+          position: "absolute",
+          right: "-5%",
+          top: "50%",
+          transform: "translateY(-50%)",
+          width: "55%",
+          maxWidth: "600px",
+          pointerEvents: "none",
+          opacity: 0.06,
+          filter: "brightness(0) invert(1)",
+        }}
+      >
+        <img src="/logo.png" alt="" style={{ width: "100%", height: "auto", display: "block" }} />
+      </div>
+
       {/* ── Grid ── */}
       <div className="hero-grid" style={{ maxWidth: "1280px", margin: "0 auto", padding: "56px 24px", width: "100%", position: "relative", zIndex: 1 }}>
 

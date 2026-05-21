@@ -155,7 +155,7 @@ export default function Header() {
             <img
               src="/logo.png"
               alt="مكتب السعدي للمحاماة"
-              style={{ height: "44px", width: "auto", objectFit: "contain", display: "block" }}
+              style={{ height: "58px", width: "auto", objectFit: "contain", display: "block" }}
             />
           </Link>
 
