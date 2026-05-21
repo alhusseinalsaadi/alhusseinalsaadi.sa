@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Phone, Mail, MapPin, Twitter, Linkedin } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings";
 
 const services = [
@@ -41,13 +41,13 @@ export default async function Footer() {
             </p>
             <div style={{ display: "flex", gap: "12px" }}>
               {s.twitter && (
-                <a href={s.twitter} target="_blank" rel="noopener noreferrer" style={{ width: "40px", height: "40px", background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", color: "#C9A84C", textDecoration: "none" }}>
-                  <Twitter size={18} />
+                <a href={s.twitter} target="_blank" rel="noopener noreferrer" style={{ width: "40px", height: "40px", background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", color: "#C9A84C", textDecoration: "none", fontSize: "13px", fontWeight: 700 }}>
+                  X
                 </a>
               )}
               {s.linkedin && (
-                <a href={s.linkedin} target="_blank" rel="noopener noreferrer" style={{ width: "40px", height: "40px", background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", color: "#C9A84C", textDecoration: "none" }}>
-                  <Linkedin size={18} />
+                <a href={s.linkedin} target="_blank" rel="noopener noreferrer" style={{ width: "40px", height: "40px", background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", color: "#C9A84C", textDecoration: "none", fontSize: "11px", fontWeight: 700 }}>
+                  in
                 </a>
               )}
             </div>
