@@ -10,7 +10,7 @@ const DEFAULTS = {
   phone2: "0122635336",
   email: "alhusseinalmojan@gmail.com",
   address: "جدة - شارع التحلية خلف مبنى الرياض بلازا",
-  whatsapp: "966555533554",
+  whatsapp: "966555545533",
   twitter: "",
   linkedin: "",
 };

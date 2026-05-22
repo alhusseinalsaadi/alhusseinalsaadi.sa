@@ -95,7 +95,7 @@ export default function ServicePageLayout({
                 <MessageCircle size={18} />
                 احجز استشارة مجانية
               </Link>
-              <a href="https://wa.me/966555533554?text=مرحباً، أريد استشارة قانونية" target="_blank" rel="noopener noreferrer" className="btn-outline">
+              <a href="https://wa.me/966555545533?text=مرحباً، أريد استشارة قانونية" target="_blank" rel="noopener noreferrer" className="btn-outline">
                 تواصل عبر واتساب
               </a>
             </div>

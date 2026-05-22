@@ -12,7 +12,7 @@ export default function WhatsAppButton() {
 
   if (!visible) return null;
 
-  const phone = "966555533554";
+  const phone = "966555545533";
   const message = encodeURIComponent("مرحباً، أريد استشارة قانونية");
 
   return (

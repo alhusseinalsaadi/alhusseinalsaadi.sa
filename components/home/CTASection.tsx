@@ -53,7 +53,7 @@ export default function CTASection() {
             احجز استشارة مجانية
           </Link>
           <a
-            href="https://wa.me/966500000000?text=مرحباً، أريد استشارة قانونية"
+            href="https://wa.me/966555545533?text=مرحباً، أريد استشارة قانونية"
             target="_blank"
             rel="noopener noreferrer"
             style={{

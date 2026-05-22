@@ -54,7 +54,7 @@ export default function RootLayout({
               "@type": ["LegalService", "LocalBusiness"],
               name: "مكتب الحسين بن أحمد بن حسين السعدي للمحاماة",
               description: "مكتب محاماة متخصص في القانون السعودي في جدة",
-              telephone: ["+966555533554", "+96612635336"],
+              telephone: ["+966555545533", "+96612635336"],
               email: "alhusseinalmojan@gmail.com",
               address: {
                 "@type": "PostalAddress",
