@@ -1,20 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import bcrypt from "bcryptjs";
+import { createHash, timingSafeEqual, pbkdf2Sync } from "crypto";
 import { rateLimiters, getIP, tooManyRequests, AuthSchema } from "@/lib/security";
 
-// Hash stored in env — generate with: node -e "require('bcryptjs').hash('yourpw',12).then(console.log)"
-// Falls back to plain comparison ONLY in dev when ADMIN_PASSWORD_HASH is not set
+// Hash format: "pbkdf2:sha512:100000:<hex-salt>:<hex-hash>"
+// Generate with: node -e "
+//   const {pbkdf2Sync,randomBytes}=require('crypto');
+//   const s=randomBytes(32).toString('hex');
+//   const h=pbkdf2Sync('YOUR_PASSWORD',s,100000,64,'sha512').toString('hex');
+//   console.log('pbkdf2:sha512:100000:'+s+':'+h);
+// "
+function verifyPbkdf2(plain: string, stored: string): boolean {
+  const parts = stored.split(":");
+  if (parts.length !== 5 || parts[0] !== "pbkdf2") return false;
+  const [, digest, iterStr, salt, expectedHex] = parts;
+  const iterations = parseInt(iterStr, 10);
+  const derived = pbkdf2Sync(plain, salt, iterations, 64, digest).toString("hex");
+  const a = Buffer.from(derived, "hex");
+  const b = Buffer.from(expectedHex, "hex");
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
+// Legacy bcrypt-style hash: "$2b$..." — verified via SHA-256 of the expected hash
+// This path is only used if ADMIN_PASSWORD_HASH starts with "$2b$"
+// To migrate: set ADMIN_PASSWORD_HASH to a pbkdf2:... value (see above)
 async function verifyPassword(plain: string): Promise<boolean> {
-  const hash    = process.env.ADMIN_PASSWORD_HASH;
+  const stored = process.env.ADMIN_PASSWORD_HASH;
   const rawPass = process.env.ADMIN_PASSWORD;
 
-  if (hash) {
-    return bcrypt.compare(plain, hash);
+  if (stored) {
+    if (stored.startsWith("pbkdf2:")) {
+      return verifyPbkdf2(plain, stored);
+    }
+    // Fallback: bcryptjs (only if not bundled away by Turbopack)
+    try {
+      const { compare } = await import("bcryptjs");
+      return compare(plain, stored);
+    } catch {
+      return false;
+    }
   }
-  // Dev-only fallback — never reached in prod if ADMIN_PASSWORD_HASH is set
+
+  // Dev-only plain fallback
   if (process.env.NODE_ENV !== "production" && rawPass) {
-    return plain === rawPass;
+    const a = createHash("sha256").update(plain).digest();
+    const b = createHash("sha256").update(rawPass).digest();
+    return timingSafeEqual(a, b);
   }
   return false;
 }
@@ -30,7 +62,6 @@ export async function POST(req: NextRequest) {
 
   const parsed = AuthSchema.safeParse(body);
   if (!parsed.success) {
-    // Generic message — don't reveal which field failed
     return NextResponse.json({ error: "بيانات الدخول غير صحيحة" }, { status: 401 });
   }
 
@@ -45,11 +76,7 @@ export async function POST(req: NextRequest) {
   const emailMatch    = email.toLowerCase() === adminEmail.toLowerCase();
   const passwordMatch = await verifyPassword(password);
 
-  console.log("[auth] email:", email, "adminEmail:", adminEmail, "emailMatch:", emailMatch, "passwordMatch:", passwordMatch);
-
-  // Always run both checks (no short-circuit) to prevent timing attacks
   if (!emailMatch || !passwordMatch) {
-    // Delay response slightly to slow brute-force even if rate limiter is bypassed
     await new Promise((r) => setTimeout(r, 500));
     return NextResponse.json({ error: "بيانات الدخول غير صحيحة" }, { status: 401 });
   }
@@ -59,7 +86,7 @@ export async function POST(req: NextRequest) {
     httpOnly: true,
     secure:   process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge:   60 * 60,   // 60 minutes session timeout
+    maxAge:   60 * 60,
     path:     "/",
   });
 
