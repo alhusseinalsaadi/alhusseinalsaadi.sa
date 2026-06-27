@@ -3,14 +3,14 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings";
 
 const services = [
-  { label: "القضايا التجارية",       href: "/services/legal-consulting" },
-  { label: "تقسيم التركات",          href: "/services/legal-consulting" },
-  { label: "القانون الجنائي",        href: "/services/legal-consulting" },
-  { label: "الأنظمة العقارية",       href: "/services/real-estate-law" },
-  { label: "الأحوال الشخصية",        href: "/services/legal-consulting" },
-  { label: "نظام العمل",            href: "/services/compliance" },
-  { label: "العقود والتوثيق",        href: "/services/contract-review" },
-  { label: "التحكيم وحل النزاعات",   href: "/services/dispute-resolution" },
+  { id: 1, label: "القضايا التجارية",       href: "/services/legal-consulting" },
+  { id: 2, label: "تقسيم التركات",          href: "/services/inheritance-law" },
+  { id: 3, label: "القانون الجنائي",        href: "/services/criminal-law" },
+  { id: 4, label: "الأنظمة العقارية",       href: "/services/real-estate-law" },
+  { id: 5, label: "الأحوال الشخصية",        href: "/services/family-law" },
+  { id: 6, label: "نظام العمل",            href: "/services/compliance" },
+  { id: 7, label: "العقود والتوثيق",        href: "/services/contract-review" },
+  { id: 8, label: "التحكيم وحل النزاعات",   href: "/services/dispute-resolution" },
 ];
 
 const quickLinks = [
@@ -58,7 +58,7 @@ export default async function Footer() {
             <h3 style={{ fontFamily: "'Noto Kufi Arabic', serif", fontSize: "18px", fontWeight: 700, color: "#C9A84C", marginBottom: "20px" }}>خدماتنا</h3>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
               {services.map((sv) => (
-                <li key={sv.href}>
+                <li key={sv.id}>
                   <Link href={sv.href} style={{ color: "rgba(255,255,255,0.65)", textDecoration: "none", fontSize: "14px" }}>{sv.label}</Link>
                 </li>
               ))}
