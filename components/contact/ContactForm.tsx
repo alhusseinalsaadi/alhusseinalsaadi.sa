@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { trackContactForm } from "@/lib/meta-pixel";
 
 const SAUDI_PHONE = /^(\+966|00966|0)(5\d{8})$/;
 const EMAIL_RE    = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -65,6 +66,7 @@ export default function ContactForm() {
         return;
       }
       setSubmitted(true);
+      trackContactForm({ content_name: form.service || 'Contact Form Submission' });
     } catch {
       setError("تعذّر الاتصال بالخادم، يرجى المحاولة مرة أخرى.");
     } finally {

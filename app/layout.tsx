@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import JsonLd from "@/components/layout/JsonLd";
+import MetaPixel from "@/components/layout/MetaPixel";
 
 export const metadata: Metadata = {
   title: {
@@ -48,6 +49,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800;900&family=IBM+Plex+Arabic:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <MetaPixel />
         <JsonLd />
       </head>
       <body className="min-h-full flex flex-col" style={{ fontFamily: "'IBM Plex Arabic', sans-serif" }}>

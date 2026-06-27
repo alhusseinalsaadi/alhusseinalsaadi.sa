@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { trackLead } from "@/lib/meta-pixel";
 
 interface Props { phone?: string; }
 
@@ -12,6 +13,10 @@ export default function WhatsAppButton({ phone = "966555545533" }: Props) {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleWhatsAppClick = () => {
+    trackLead({ content_name: 'WhatsApp Contact' });
+  };
+
   if (!visible) return null;
 
   const message = encodeURIComponent("مرحباً، أريد استشارة قانونية");
@@ -22,6 +27,7 @@ export default function WhatsAppButton({ phone = "966555545533" }: Props) {
       target="_blank"
       rel="noopener noreferrer"
       title="تواصل معنا على واتساب"
+      onClick={handleWhatsAppClick}
       style={{
         position: "fixed",
         bottom: "90px",
