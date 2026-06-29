@@ -26,14 +26,23 @@ export default function AppointmentsClient() {
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch("/api/appointments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    setForm({ date: "", time: "", meetLink: "" });
-    await load();
-    setLoading(false);
+    try {
+      const res = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        setForm({ date: "", time: "", meetLink: "" });
+        await load();
+      } else {
+        alert("فشل إضافة الموعد. تحقق من البيانات.");
+      }
+    } catch {
+      alert("حدث خطأ في الاتصال");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const remove = async (id: string) => {
