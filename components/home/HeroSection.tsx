@@ -12,6 +12,15 @@ const headlines = [
 
 export default function HeroSection({ phone1 = "0555545533" }: { phone1?: string }) {
   const [headlineIndex, setHeadlineIndex] = useState(0);
+  const [officeName, setOfficeName] = useState("مكتب الحسين بن أحمد بن حسين السعدي للمحاماة");
+  const [currentPhone, setCurrentPhone] = useState(phone1);
+
+  useEffect(() => {
+    fetch("/api/settings").then(r => r.json()).then(data => {
+      if (data.officeName) setOfficeName(data.officeName);
+      if (data.phone1) setCurrentPhone(data.phone1);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -92,7 +101,7 @@ export default function HeroSection({ phone1 = "0555545533" }: { phone1?: string
 
           {/* Firm name pill */}
           <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "13px", marginBottom: "12px", letterSpacing: "0.5px" }}>
-            مكتب الحسين بن أحمد بن حسين السعدي للمحاماة
+            {officeName}
           </p>
 
           {/* Rotating headline */}
@@ -130,7 +139,7 @@ export default function HeroSection({ phone1 = "0555545533" }: { phone1?: string
               <ArrowLeft size={17} style={{ transform: "scaleX(-1)" }} />
             </Link>
             <a
-              href={`tel:${phone1}`}
+              href={`tel:${currentPhone}`}
               style={{
                 display: "inline-flex",
                 alignItems: "center",

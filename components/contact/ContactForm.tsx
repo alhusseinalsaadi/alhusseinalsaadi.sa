@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { trackContactForm } from "@/lib/meta-pixel";
@@ -30,6 +30,11 @@ export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState("");
+  const [settings, setSettings]   = useState({ phone1: "0555545533", phone2: "0122635336", email: "alhusseinalmojan@gmail.com", address: "جدة - شارع التحلية، خلف مبنى الرياض بلازا", workingHours: "الأحد – الخميس: 8 ص – 8 م" });
+
+  useEffect(() => {
+    fetch("/api/settings").then(r => r.json()).then(setSettings).catch(() => {});
+  }, []);
 
   const validate = (): string => {
     if (!form.name.trim() || form.name.trim().length < 2) return "الرجاء إدخال الاسم الكامل";
@@ -83,10 +88,10 @@ export default function ContactForm() {
         </h2>
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
           {[
-            { icon: Phone,  label: "الهاتف",              value: "0555545533 / 0122635336",                   href: "tel:0555545533" },
-            { icon: Mail,   label: "البريد الإلكتروني",   value: "alhusseinalmojan@gmail.com",                href: "mailto:alhusseinalmojan@gmail.com" },
-            { icon: MapPin, label: "العنوان",              value: "جدة - شارع التحلية، خلف مبنى الرياض بلازا", href: "#" },
-            { icon: Clock,  label: "ساعات العمل",         value: "الأحد – الخميس: 8 ص – 8 م",               href: "#" },
+            { icon: Phone,  label: "الهاتف",              value: `${settings.phone1}${settings.phone2 ? ' / ' + settings.phone2 : ''}`,     href: `tel:${settings.phone1}` },
+            { icon: Mail,   label: "البريد الإلكتروني",   value: settings.email,                                                            href: `mailto:${settings.email}` },
+            { icon: MapPin, label: "العنوان",              value: settings.address,                                                        href: "#" },
+            { icon: Clock,  label: "ساعات العمل",         value: settings.workingHours?.split("\n")[0] || "الأحد – الخميس: 8 ص – 8 م",    href: "#" },
           ].map(({ icon: Icon, label, value, href }) => (
             <a key={label} href={href} style={{ display: "flex", gap: "16px", alignItems: "flex-start", textDecoration: "none" }}>
               <div style={{ width: "48px", height: "48px", background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>

@@ -11,6 +11,7 @@ async function isAdmin() {
 const ALLOWED_KEYS = [
   "officeName", "phone1", "phone2", "email",
   "address", "whatsapp", "twitter", "linkedin",
+  "workingHours", "mapUrl", "ogImage",
 ];
 
 // Public GET — contact info is not sensitive

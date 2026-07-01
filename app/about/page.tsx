@@ -6,6 +6,7 @@ import AIChatWidget from "@/components/ai/AIChatWidget";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import CookieConsent from "@/components/ui/CookieConsent";
 import { Award, Users, Shield, Target } from "lucide-react";
+import { getSiteSettings } from "@/lib/site-settings";
 
 export const metadata: Metadata = {
   title: "من نحن",
@@ -19,7 +20,8 @@ const values = [
   { icon: Target, title: "النتيجة لا الوعد", desc: "لا نُكثر من الكلام قبل المعركة. نتحدث بالأرقام والأحكام بعدها — هذا ما يهم فعلاً." },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const s = await getSiteSettings();
   return (
     <>
       <Header />
@@ -102,9 +104,9 @@ export default function AboutPage() {
             <div className="gold-divider" />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px", marginTop: "40px" }}>
               {[
-                { label: "الهاتف", value: "0555545533", sub: "0122635336" },
-                { label: "البريد الإلكتروني", value: "alhusseinalmojan@gmail.com", sub: "" },
-                { label: "العنوان", value: "جدة - شارع التحلية", sub: "خلف مبنى الرياض بلازا" },
+                { label: "الهاتف", value: s.phone1, sub: s.phone2 },
+                { label: "البريد الإلكتروني", value: s.email, sub: "" },
+                { label: "العنوان", value: s.address?.split(" ").slice(0, 4).join(" ") || "جدة - شارع التحلية", sub: s.address?.split(" ").slice(4).join(" ") || "خلف مبنى الرياض بلازا" },
               ].map(({ label, value, sub }) => (
                 <div key={label} style={{ background: "white", borderRadius: "16px", padding: "32px 24px", boxShadow: "0 4px 24px rgba(26,39,68,0.08)", border: "1px solid #E5E5E0" }}>
                   <p style={{ fontSize: "13px", color: "#C9A84C", fontWeight: 700, marginBottom: "8px", letterSpacing: "1px" }}>{label}</p>
